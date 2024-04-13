@@ -39,6 +39,8 @@ AInvasionCharacter::AInvasionCharacter()
 	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
+	SpellComponent = CreateDefaultSubobject<USpellComponent>(TEXT("SpellComponent"));
+	SpellComponent->SetupAttachment(GetCapsuleComponent());
 }
 
 void AInvasionCharacter::BeginPlay()
@@ -54,7 +56,6 @@ void AInvasionCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -73,6 +74,8 @@ void AInvasionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::Look);
+
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::CastSpell);
 	}
 	else
 	{
@@ -105,6 +108,11 @@ void AInvasionCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AInvasionCharacter::CastSpell(const FInputActionValue& Value)
+{
+	SpellComponent->CastSpell();
 }
 
 void AInvasionCharacter::SetHasRifle(bool bNewHasRifle)
