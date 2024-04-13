@@ -75,7 +75,7 @@ void AInvasionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::Look);
 
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::CastSpell);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::StartSpellCasting);
 	}
 	else
 	{
@@ -83,6 +83,20 @@ void AInvasionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	}
 }
 
+
+void AInvasionCharacter::SwitchToUIMode()
+{
+	APlayerController* PC = GetController<APlayerController>();
+	PC->SetShowMouseCursor(true);
+	PC->SetInputMode(FInputModeUIOnly());
+}
+
+void AInvasionCharacter::SwitchToGameMode()
+{
+	APlayerController* PC = GetController<APlayerController>();
+	PC->SetShowMouseCursor(false);
+	PC->SetInputMode(FInputModeGameOnly());
+}
 
 void AInvasionCharacter::Move(const FInputActionValue& Value)
 {
@@ -110,9 +124,19 @@ void AInvasionCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
-void AInvasionCharacter::CastSpell(const FInputActionValue& Value)
+void AInvasionCharacter::StartSpellCasting(const FInputActionValue& Value)
 {
-	SpellComponent->CastSpell();
+	SpellRuneDisplayWidget = CreateWidget<USpellRuneDisplayWidget>(GetWorld(), SpellRuneDisplayWidgetClass);
+	SpellRuneDisplayWidget->AddToViewport();
+
+	SwitchToUIMode();
+}
+
+void AInvasionCharacter::CastSpell(float Strenght)
+{
+	SpellComponent->CastSpell(Strenght);
+
+	SwitchToGameMode();
 }
 
 void AInvasionCharacter::SetHasRifle(bool bNewHasRifle)

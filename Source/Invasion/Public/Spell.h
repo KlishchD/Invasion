@@ -15,15 +15,21 @@ class INVASION_API USpell : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TObjectPtr<UNiagaraSystem> Effect;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TObjectPtr<USoundWave> FlyingSoundWave;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Behaviour")
 	float Speed;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Behaviour")
 	float Offset;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Runes")
+	TArray<FVector2D> RunePoints;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Runes")
+	TObjectPtr<UMaterialInterface> RuneMaterial;
 };

@@ -17,15 +17,18 @@ void USpellComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void USpellComponent::CastSpell()
+void USpellComponent::CastSpell(float Strength)
 {
-	if (AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass))
+	if (!FMath::IsNearlyZero(Strength))
 	{
-		USpell* Spell = GetActiveSpell();
+		if (AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass))
+		{
+			USpell* Spell = GetActiveSpell();
 
-		Projectile->SetActorLocation(GetComponentLocation() + GetForwardVector() * Spell->Offset);
-		Projectile->SetActorRotation(GetComponentRotation());
-		Projectile->Initialize(Spell);
+			Projectile->SetActorLocation(GetComponentLocation() + GetForwardVector() * Spell->Offset);
+			Projectile->SetActorRotation(GetComponentRotation());
+			Projectile->Initialize(Spell);
+		}
 	}
 }
 
