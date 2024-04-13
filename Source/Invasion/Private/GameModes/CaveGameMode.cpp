@@ -3,7 +3,7 @@
 
 #include "GameModes/CaveGameMode.h"
 
-#include "Engine/TargetPoint.h"
+#include "EnemyPoint/EnemyTargetPoint.h"
 #include "Kismet/GameplayStatics.h"
 
 void ACaveGameMode::BeginPlay()
@@ -11,10 +11,13 @@ void ACaveGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	TArray<AActor*> EnemySpawnPoints;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ATargetPoint::StaticClass(), EnemySpawnPoints);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyTargetPoint::StaticClass(), EnemySpawnPoints);
 
 	for (const AActor* SpawnPoint : EnemySpawnPoints)
 	{
-		GetWorld()->SpawnActor<ABaseEnemyCharacter>(EnemyCharacterClass, SpawnPoint->GetActorLocation(), SpawnPoint->GetActorRotation());
+		if (const AEnemyTargetPoint* SpawnEnemyTargetPoint = Cast<AEnemyTargetPoint>(SpawnPoint); SpawnEnemyTargetPoint->EnemyToSpawn)
+		{
+			GetWorld()->SpawnActor<ABaseEnemyCharacter>(SpawnEnemyTargetPoint->EnemyToSpawn, SpawnEnemyTargetPoint->GetTransform());
+		}
 	}
 }
