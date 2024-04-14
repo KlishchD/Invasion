@@ -99,3 +99,8 @@ bool ABaseSpiritCharacter::IsAlive() const
 {
 	return bIsAlive;
 }
+
+bool ABaseSpiritCharacter::IsAttacking()
+{
+	return bIsAttacking;
+}
