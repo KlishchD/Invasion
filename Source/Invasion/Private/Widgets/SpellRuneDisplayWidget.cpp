@@ -18,6 +18,7 @@ void USpellRuneDisplayWidget::NativeConstruct()
 	RuneImageDynamicMaterialInstance = UMaterialInstanceDynamic::Create(RuneImageMaterial, this);
 	RuneImageDynamicMaterialInstance->SetTextureParameterValue(TEXT("Background"), SpellDrawingSubsystem->GetRuneExample());
 	RuneImageDynamicMaterialInstance->SetTextureParameterValue(TEXT("Foreground"), SpellDrawingSubsystem->GetRuneCanvas());
+	RuneImageDynamicMaterialInstance->SetVectorParameterValue(TEXT("Color"), Spell->ElementColor);
 
 	Image->SetBrushFromMaterial(RuneImageDynamicMaterialInstance);
 

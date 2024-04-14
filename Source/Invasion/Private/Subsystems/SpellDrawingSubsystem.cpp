@@ -57,9 +57,9 @@ void USpellDrawingSubsystem::DrawRune()
 		FVector2D Direction = (CurrentScreen - PreviousScreen).GetSafeNormal();
 		float Angle = FMath::RadiansToDegrees(FMath::Acos(Direction.Dot(AxisLine)));
 
-		Angle *= PreviousScreen > CurrentScreen ? -1 : 1;
+		Angle *= PreviousScreen.Y > CurrentScreen.Y ? -1 : 1;
 
-		Canvas->K2_DrawMaterial(ActiveSpell->RuneMaterial.Get(), PreviousScreen, FVector2D(LineSize, LineWidth), FVector2D::ZeroVector, FVector2D::UnitVector, Angle, FVector2D::ZeroVector);
+		Canvas->K2_DrawMaterial(ActiveSpell->ExplanationRuneMaterial.Get(), PreviousScreen, FVector2D(LineSize, LineWidth), FVector2D::ZeroVector, FVector2D::UnitVector, Angle, FVector2D(0.0f, 0.5f));
 	}
 
 	/* Tiled version ;)
@@ -99,7 +99,7 @@ void USpellDrawingSubsystem::DrawTile(FVector2D Point)
 
 	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(GetWorld(), CanvasDisplayTarget, Canvas, Size, Context);
 
-	Canvas->K2_DrawMaterial(ActiveSpell->RuneMaterial.Get(), Point - FVector2D(TileSize / 2.0f), FVector2D(TileSize), FVector2D::ZeroVector);
+	Canvas->K2_DrawMaterial(ActiveSpell->DrawRuneMaterial.Get(), Point - FVector2D(TileSize / 2.0f), FVector2D(TileSize), FVector2D::ZeroVector);
 
 	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(GetWorld(), Context);
 }
@@ -183,8 +183,11 @@ float USpellDrawingSubsystem::GetSpellCastStrength() const
 
 void USpellDrawingSubsystem::AddPoint(FVector2D Position)
 {
-	Points.Add(Position);
-	DrawTile(Position);
+	if (ActiveSpell)
+	{
+		Points.Add(Position);
+		DrawTile(Position);
+	}
 }
 
 void USpellDrawingSubsystem::ClearPoints()

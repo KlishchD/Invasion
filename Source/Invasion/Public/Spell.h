@@ -34,7 +34,10 @@ public:
 	TArray<FVector2D> RunePoints;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Runes")
-	TObjectPtr<UMaterialInterface> RuneMaterial;
+	TObjectPtr<UMaterialInterface> ExplanationRuneMaterial;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Runes")
+	TObjectPtr<UMaterialInterface> DrawRuneMaterial;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float ActiveRadius;
