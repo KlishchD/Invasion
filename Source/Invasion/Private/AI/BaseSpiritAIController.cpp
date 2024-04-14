@@ -24,10 +24,7 @@ void ABaseSpiritAIController::OnPossess(APawn* InPawn)
 void ABaseSpiritAIController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	
 	SetFocus(GetFocusOnActor());
-	UE_LOG(LogTemp, Error, TEXT("Focus character: %s"), GetFocusActor() ? *GetFocusActor()->GetName() : TEXT("NOT FOCUS CHARACTER"));
-	
 }
 
 AActor* ABaseSpiritAIController::GetFocusOnActor()

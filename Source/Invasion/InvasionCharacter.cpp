@@ -194,7 +194,7 @@ void AInvasionCharacter::SummonSpirit()
 
 		FActorSpawnParameters parameters = FActorSpawnParameters();
 		parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		SpiritCharacter = GetWorld()->SpawnActor<ABaseSpiritCharacter>(SpiritCharacterClass, GetActorLocation() + GetActorForwardVector() * SpiritSpawnOffset, (-GetActorForwardVector()).ToOrientationRotator(), parameters);
+		SpiritCharacter = GetWorld()->SpawnActor<ABaseSpiritCharacter>(SpiritCharacterClass, GetActorLocation() + GetActorForwardVector() * SpiritSpawnOffset, (GetActorForwardVector()).ToOrientationRotator(), parameters);
 	}
 }
 

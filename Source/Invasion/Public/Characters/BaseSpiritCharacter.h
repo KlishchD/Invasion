@@ -20,6 +20,13 @@ public:
 
 	bool IsAlive() const;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsAttacking();
+
+	void SetIsAttacking(bool InbIsAttacking) { bIsAttacking = InbIsAttacking; }
+
+	float GetSpiritDamage() const { return SpiritDamage; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBehaviorTree> MainBehaviorTree;
@@ -36,12 +43,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float FadeOutTime = 3.0f;
 
+	UPROPERTY(EditAnywhere)
+	float SpiritDamage = 10.0f;
+
 	UPROPERTY()
 	TObjectPtr<class ABaseSpiritAIController> BaseSpiritAIController;
 	
 	UPROPERTY()
-	TArray<TObjectPtr<UMaterialInstanceDynamic>> Materials; 
-
+	TArray<TObjectPtr<UMaterialInstanceDynamic>> Materials;
 	
 	float FadeInTimer = 0.0f;
 	float FadeOutTimer = 0.0f;
@@ -51,4 +60,5 @@ protected:
 	bool bIsAlive = true;
 	float Timer = 0.0f;
 
+	bool bIsAttacking = false;
 };

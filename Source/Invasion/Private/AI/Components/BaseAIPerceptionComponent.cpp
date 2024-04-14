@@ -2,6 +2,7 @@
 
 #include "AI/BaseSpiritAIController.h"
 #include "Characters/BaseSpiritCharacter.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Sight.h"
 
 AActor* UBaseAIPerceptionComponent::GetClosestEnemy()
@@ -21,9 +22,7 @@ AActor* UBaseAIPerceptionComponent::GetClosestEnemy()
 
 	for(AActor* PerceiveActor : PerceiveActors)
 	{
-		//check is enemy alive and ally or enemy
-		//PerceiveActor->GetCurrentHealth...
-		//if()
+		if(PerceiveActor != UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
 		{
 			float CurrentDistance = (PerceiveActor->GetActorLocation() - Character->GetActorLocation()).Size();
 			if(CurrentDistance < BestDistance)
@@ -33,7 +32,6 @@ AActor* UBaseAIPerceptionComponent::GetClosestEnemy()
 			}
 		}
 	}
-	UE_LOG(LogTemp, Error, TEXT("Closest character: %s"), *BestCharacter->GetName())
 	return BestCharacter;
 	
 }
