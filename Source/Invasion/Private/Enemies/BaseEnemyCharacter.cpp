@@ -43,8 +43,6 @@ void ABaseEnemyCharacter::BeginPlay()
 
 	AnimInstance = CastChecked<UEnemyAnimInstance>( GetMesh() ? GetMesh()->GetAnimInstance() : nullptr );
 
-	OnTakeAnyDamage.AddUniqueDynamic(this, &ThisClass::OnTakeDamage);
-
 	if (HealthBar && HealthBar->GetWidget())
 	{
 		HealthBarWidget = Cast<UHealthBar>(HealthBar->GetWidget());
@@ -65,8 +63,6 @@ void ABaseEnemyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	WeaponStaticMeshComponent->OnComponentBeginOverlap.RemoveAll(this);
 	WeaponOverlapSphereComponent->OnComponentBeginOverlap.RemoveAll(this);
 	WeaponOverlapSphereComponent->OnComponentEndOverlap.RemoveAll(this);
-
-	OnTakeAnyDamage.RemoveAll(this);
 }
 
 void ABaseEnemyCharacter::OnActorPerceived(const FActorPerceptionUpdateInfo& ActorPerceptionInfo)
@@ -116,10 +112,10 @@ void ABaseEnemyCharacter::OnWeaponOverlap(UPrimitiveComponent* OverlappedCompone
 	}
 }
 
-void ABaseEnemyCharacter::OnTakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatedBy, AActor* DamageCauser)
+float ABaseEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+	AActor* DamageCauser)
 {
-	CurrentHealth -= Damage;
+	CurrentHealth -= DamageAmount;
 
 	if (HealthBarWidget)
 	{
@@ -127,6 +123,8 @@ void ABaseEnemyCharacter::OnTakeDamage(AActor* DamagedActor, float Damage, const
 		HealthBarWidget->GetHealthBar()->SetPercent(HealthPercent);
 		HealthBarWidget->SetText(FText::AsNumber(CurrentHealth));
 	}
+	
+	return DamageAmount;
 }
 
 void ABaseEnemyCharacter::Tick(float DeltaTime)
