@@ -123,8 +123,19 @@ float ABaseEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 		HealthBarWidget->GetHealthBar()->SetPercent(HealthPercent);
 		HealthBarWidget->SetText(FText::AsNumber(CurrentHealth));
 	}
+
+	if (CurrentHealth <= 0.f)
+	{
+		EnemyAIController->UnPossess();
+		HealthBar->SetHiddenInGame(true);
+
+		if (Cast<AInvasionCharacter>(DamageCauser))
+		{
+			MainCharacter->AddManaOffset(ManaReward);
+		}
+	}
 	
-	return DamageAmount;
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void ABaseEnemyCharacter::Tick(float DeltaTime)

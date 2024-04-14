@@ -91,6 +91,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BaseDamage = 20.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ManaReward = 10.f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FLinearColor HealthBarWidgetColor;
 	

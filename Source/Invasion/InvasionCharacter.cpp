@@ -202,7 +202,7 @@ float AInvasionCharacter::TakeDamage(float DamageAmount, struct FDamageEvent con
 {
 	AddHealthOffset(-DamageAmount);
 
-	return DamageAmount;
+	return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void AInvasionCharacter::AddHealthOffset(float Offset)

@@ -25,15 +25,6 @@ protected:
 	TObjectPtr<UAnimMontage> AttackMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAnimationAsset> IdleAnimation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAnimationAsset> WalkAnimation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UAnimationAsset> RunAnimation;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TObjectPtr<UAnimMontage> ReceiveLightDamageMontage;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
