@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnemyAnimInstance.h"
 #include "AI/BaseEnemyAIController.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
@@ -39,10 +40,16 @@ protected:
 
 	UFUNCTION()
 	void OnEndWeaponRadiusOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	float OnAttack();
+	
 	UFUNCTION(BlueprintCallable)
 	void Walk();
 
@@ -58,9 +65,12 @@ protected:
 
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAcess = "true"))
 	TObjectPtr<UAIPerceptionComponent> PerceptionComponent;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Overlap Components")
-	TObjectPtr<USphereComponent> OverlapSphereComponent;
+	TObjectPtr<USphereComponent> WeaponOverlapSphereComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float Health = 100.f;
@@ -71,20 +81,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	EEnemyType EnemyType = EEnemyType::Melee;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseDamage = 20.f;
+
 	UPROPERTY()
 	TObjectPtr<ABaseEnemyAIController> EnemyAIController;
+
+	UPROPERTY()
+	TObjectPtr<UEnemyAnimInstance> AnimInstance;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<AActor> PerceivedActor;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<AInvasionCharacter> MainCharacter;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	float WeaponRadius = 400.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsRunning = false;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float RunSpeed = 600.f;

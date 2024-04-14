@@ -5,6 +5,7 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
 
 // Sets default values
@@ -13,9 +14,12 @@ ABaseEnemyCharacter::ABaseEnemyCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	OverlapSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapSphereComponent"));
-	OverlapSphereComponent->InitSphereRadius(200.0f);
-	OverlapSphereComponent->SetupAttachment(RootComponent);
+	WeaponStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponStaticMeshComponent"));
+	WeaponStaticMeshComponent->SetupAttachment(GetMesh(), TEXT("WeaponSocket"));
+
+	WeaponOverlapSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("WeaponOverlapSphereComponent"));
+	WeaponOverlapSphereComponent->InitSphereRadius(100.f);
+	WeaponOverlapSphereComponent->SetupAttachment(RootComponent);
 
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
 }
@@ -26,10 +30,14 @@ void ABaseEnemyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	PerceptionComponent->OnTargetPerceptionInfoUpdated.AddDynamic(this, &ThisClass::OnActorPerceived);
+
+	WeaponOverlapSphereComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnWeaponRadiusOverlap);
+	WeaponOverlapSphereComponent->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::OnEndWeaponRadiusOverlap);
+	WeaponStaticMeshComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnWeaponOverlap);
 	
-	OverlapSphereComponent->OnComponentBeginOverlap.AddUniqueDynamic(this, &ThisClass::OnWeaponRadiusOverlap);
-	OverlapSphereComponent->OnComponentEndOverlap.AddUniqueDynamic(this, &ThisClass::OnEndWeaponRadiusOverlap);
 	EnemyAIController = Cast<ABaseEnemyAIController>(GetController());
+
+	AnimInstance = CastChecked<UEnemyAnimInstance>( GetMesh() ? GetMesh()->GetAnimInstance() : nullptr );
 }
 
 void ABaseEnemyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -37,9 +45,10 @@ void ABaseEnemyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	PerceptionComponent->OnTargetPerceptionInfoUpdated.RemoveAll(this);
-	
-	OverlapSphereComponent->OnComponentBeginOverlap.RemoveAll(this);
-	OverlapSphereComponent->OnComponentEndOverlap.RemoveAll(this);
+
+	WeaponStaticMeshComponent->OnComponentBeginOverlap.RemoveAll(this);
+	WeaponOverlapSphereComponent->OnComponentBeginOverlap.RemoveAll(this);
+	WeaponOverlapSphereComponent->OnComponentEndOverlap.RemoveAll(this);
 }
 
 void ABaseEnemyCharacter::OnActorPerceived(const FActorPerceptionUpdateInfo& ActorPerceptionInfo)
@@ -65,7 +74,7 @@ void ABaseEnemyCharacter::OnActorPerceived(const FActorPerceptionUpdateInfo& Act
 void ABaseEnemyCharacter::OnWeaponRadiusOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (MainCharacter)
+	if (Cast<AInvasionCharacter>(OtherActor))
 	{
 		EnemyAIController->GetBlackboardComponent()->SetValueAsBool(EnemyAIController->GetIsInWeaponRadius(), true);
 	}
@@ -74,9 +83,18 @@ void ABaseEnemyCharacter::OnWeaponRadiusOverlap(UPrimitiveComponent* OverlappedC
 void ABaseEnemyCharacter::OnEndWeaponRadiusOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if (MainCharacter)
+	if (Cast<AInvasionCharacter>(OtherActor))
 	{
 		EnemyAIController->GetBlackboardComponent()->SetValueAsBool(EnemyAIController->GetIsInWeaponRadius(), false);
+	}
+}
+
+void ABaseEnemyCharacter::OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (Cast<AInvasionCharacter>(OtherActor))
+	{
+		UGameplayStatics::ApplyDamage(OtherActor, BaseDamage, GetWorld()->GetFirstPlayerController(), this, UDamageType::StaticClass());
 	}
 }
 
@@ -102,21 +120,25 @@ void ABaseEnemyCharacter::Tick(float DeltaTime)
 	}
 }
 
+float ABaseEnemyCharacter::OnAttack()
+{
+	StopMovement();
+	AnimInstance->OnAttack();
+	return AnimInstance->GetAttackMontageLength();
+}
+
 void ABaseEnemyCharacter::Walk()
 {
-	bIsRunning = false;
 	GetCharacterMovement()->MaxWalkSpeed = WalkSpeed;
 }
 
 void ABaseEnemyCharacter::Run()
 {
-	bIsRunning = true;
 	GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
 }
 
 void ABaseEnemyCharacter::StopMovement()
 {
-	bIsRunning = false;
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
 }
 
