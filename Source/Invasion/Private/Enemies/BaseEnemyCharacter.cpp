@@ -123,7 +123,7 @@ void ABaseEnemyCharacter::OnTakeDamage(AActor* DamagedActor, float Damage, const
 
 	if (HealthBarWidget)
 	{
-		const float HealthPercent = MaxHealth / CurrentHealth;
+		const float HealthPercent = CurrentHealth / MaxHealth;
 		HealthBarWidget->GetHealthBar()->SetPercent(HealthPercent);
 		HealthBarWidget->SetText(FText::AsNumber(CurrentHealth));
 	}
