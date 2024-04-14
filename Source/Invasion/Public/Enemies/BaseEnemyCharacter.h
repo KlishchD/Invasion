@@ -3,10 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnemyAnimInstance.h"
 #include "AI/BaseEnemyAIController.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Curves/CurveLinearColor.h"
 #include "GameFramework/Character.h"
 #include "Invasion/InvasionCharacter.h"
+#include "Widgets/HealthBar.h"
 #include "BaseEnemyCharacter.generated.h"
 
 struct FActorPerceptionUpdateInfo;
@@ -39,10 +43,19 @@ protected:
 
 	UFUNCTION()
 	void OnEndWeaponRadiusOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION()
+	void OnWeaponOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnTakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 	
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	float OnAttack();
+	
 	UFUNCTION(BlueprintCallable)
 	void Walk();
 
@@ -58,33 +71,42 @@ protected:
 
 	UPROPERTY(Category = Character, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAcess = "true"))
 	TObjectPtr<UAIPerceptionComponent> PerceptionComponent;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Overlap Components")
-	TObjectPtr<USphereComponent> OverlapSphereComponent;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Health = 100.f;
+	TObjectPtr<USphereComponent> WeaponOverlapSphereComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float Armor = 10.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UStaticMeshComponent> WeaponStaticMeshComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	EEnemyType EnemyType = EEnemyType::Melee;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TObjectPtr<UWidgetComponent> HealthBar;
 
 	UPROPERTY()
+	TObjectPtr<UHealthBar> HealthBarWidget;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float CurrentHealth = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MaxHealth = 100.f;
+		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BaseDamage = 20.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FLinearColor HealthBarWidgetColor;
+	
+	UPROPERTY()
 	TObjectPtr<ABaseEnemyAIController> EnemyAIController;
+
+	UPROPERTY()
+	TObjectPtr<UEnemyAnimInstance> AnimInstance;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<AActor> PerceivedActor;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TObjectPtr<AInvasionCharacter> MainCharacter;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-	float WeaponRadius = 400.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsRunning = false;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	float RunSpeed = 600.f;
