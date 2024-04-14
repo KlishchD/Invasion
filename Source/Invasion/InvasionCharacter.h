@@ -54,6 +54,9 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* FireAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* SpellScrollAction;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USpellRuneDisplayWidget> SpellRuneDisplayWidgetClass;
 
@@ -107,6 +110,8 @@ protected:
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
+
+	void ScrollSpell(const FInputActionValue& Value);
 
 protected:
 	// APawn interface

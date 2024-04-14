@@ -42,6 +42,13 @@ void USpellComponent::SetActiveSpell(int32 Index)
 	if (Spells.IsValidIndex(Index))
 	{
 		ActiveSpellIndex = Index;
+		OnActiveSpellChanged.Broadcast(Spells[ActiveSpellIndex]);
 	}
+}
+
+void USpellComponent::MoveActiveSpellIndex(int32 Offset)
+{
+	int32 NewActiveSpellIndex = (ActiveSpellIndex + Offset + Spells.Num()) % Spells.Num();
+	SetActiveSpell(NewActiveSpellIndex);
 }
 

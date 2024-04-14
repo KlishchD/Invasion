@@ -16,6 +16,9 @@ class INVASION_API USpell : public UPrimaryDataAsset
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")
+	TObjectPtr<UTexture2D> Icon;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Effects")
 	TObjectPtr<UNiagaraSystem> Effect;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effects")

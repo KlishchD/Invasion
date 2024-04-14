@@ -8,7 +8,9 @@ void UStatusWidget::NativeConstruct()
 	AInvasionCharacter* Character = GetOwningPlayerPawn<AInvasionCharacter>();
 	Character->GetOnHealthChnaged().AddUObject(this, &ThisClass::OnHealthChanged);
 	Character->GetOnManaChanged().AddUObject(this, &ThisClass::OnManaChanged);
+	Character->GetSpellComponent()->GetOnActiveSpellChanged().AddUObject(this, &ThisClass::OnActiveSpellChanged);
 
+	SpellIcon->SetBrushFromTexture(Character->GetSpellComponent()->GetActiveSpell()->Icon);
 	HealthBar->SetPercent(Character->GetHealthNormalized());
 	ManaBar->SetPercent(Character->GetManaNormalized());
 }
@@ -34,4 +36,9 @@ void UStatusWidget::OnManaChanged(float Mana)
 {
 	AInvasionCharacter* Character = GetOwningPlayerPawn<AInvasionCharacter>();
 	ManaBar->SetPercent(Character->GetManaNormalized());
+}
+
+void UStatusWidget::OnActiveSpellChanged(USpell* NewAciveSpell)
+{
+	SpellIcon->SetBrushFromTexture(NewAciveSpell->Icon);
 }

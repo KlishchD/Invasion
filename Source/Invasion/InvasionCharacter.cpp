@@ -82,6 +82,9 @@ void AInvasionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::Look);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::StartSpellCasting);
+		
+		EnhancedInputComponent->BindAction(SpellScrollAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::ScrollSpell);
+
 	}
 	else
 	{
@@ -173,4 +176,9 @@ float AInvasionCharacter::GetHealthNormalized() const
 float AInvasionCharacter::GetManaNormalized() const
 {
 	return Mana / MaxMana;
+}
+
+void AInvasionCharacter::ScrollSpell(const FInputActionValue& Value)
+{
+	SpellComponent->MoveActiveSpellIndex(Value.Get<float>() > 0 ? 1 : -1);
 }

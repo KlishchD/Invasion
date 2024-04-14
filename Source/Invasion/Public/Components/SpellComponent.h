@@ -8,6 +8,8 @@
 #include "Spell.h"
 #include "SpellComponent.generated.h"
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnActiveSpellChanged, USpell*)
+
 UCLASS()
 class INVASION_API USpellComponent : public USceneComponent
 {
@@ -24,6 +26,10 @@ public:
 	USpell* GetActiveSpell() const;
 	void SetActiveSpell(int32 Index);
 
+	void MoveActiveSpellIndex(int32 Offset);
+
+	FOnActiveSpellChanged& GetOnActiveSpellChanged() { return OnActiveSpellChanged; }
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AProjectile> ProjectileClass;
@@ -33,4 +39,6 @@ protected:
 
 	UPROPERTY()
 	int32 ActiveSpellIndex = 0;
+
+	FOnActiveSpellChanged OnActiveSpellChanged;
 };
