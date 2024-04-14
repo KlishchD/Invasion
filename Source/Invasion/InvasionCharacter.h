@@ -8,6 +8,7 @@
 #include "Logging/LogMacros.h"
 #include "Components/SpellComponent.h"
 #include "Widgets/SpellRuneDisplayWidget.h"
+#include "Widgets/StatusWidget.h"
 #include "InvasionCharacter.generated.h"
 
 class UInputComponent;
@@ -18,6 +19,9 @@ class UInputMappingContext;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChnaged, float)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnManaChanged, float)
 
 UCLASS(config=Game)
 class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
@@ -53,8 +57,26 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USpellRuneDisplayWidget> SpellRuneDisplayWidgetClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UStatusWidget> StatusWidgetClass;
+
+	UPROPERTY(EditAnywhere)
+	float MaxHealth = 100.0f;
+
+	UPROPERTY(EditAnywhere)
+	float MaxMana = 100.0f;
+
 	UPROPERTY()
 	TObjectPtr<USpellRuneDisplayWidget> SpellRuneDisplayWidget;
+	
+	UPROPERTY()
+	TObjectPtr<UStatusWidget> StatusWidget;
+
+	FOnHealthChnaged OnHealthChnaged;
+	FOnManaChanged OnManaChanged;
+
+	float Health;
+	float Mana;
 public:
 	AInvasionCharacter();
 
@@ -104,5 +126,14 @@ public:
 
 	void SwitchToUIMode();
 	void SwitchToGameMode();
+
+	FOnHealthChnaged& GetOnHealthChnaged() { return OnHealthChnaged; }
+	FOnManaChanged& GetOnManaChanged() { return OnManaChanged; }
+
+	float GetHealth() const;
+	float GetMana() const;
+
+	float GetHealthNormalized() const;
+	float GetManaNormalized() const;
 };
 

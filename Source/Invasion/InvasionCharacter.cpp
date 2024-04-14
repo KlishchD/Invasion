@@ -45,6 +45,9 @@ AInvasionCharacter::AInvasionCharacter()
 
 void AInvasionCharacter::BeginPlay()
 {
+	Health = MaxHealth;
+	Mana = MaxMana;
+
 	// Call the base class  
 	Super::BeginPlay();
 
@@ -56,6 +59,9 @@ void AInvasionCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	StatusWidget = CreateWidget<UStatusWidget>(GetWorld(), StatusWidgetClass);
+	StatusWidget->AddToViewport();
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -147,4 +153,24 @@ void AInvasionCharacter::SetHasRifle(bool bNewHasRifle)
 bool AInvasionCharacter::GetHasRifle()
 {
 	return bHasRifle;
+}
+
+float AInvasionCharacter::GetHealth() const
+{
+	return Health;
+}
+
+float AInvasionCharacter::GetMana() const
+{
+	return Mana;
+}
+
+float AInvasionCharacter::GetHealthNormalized() const
+{
+	return Health / MaxHealth;
+}
+
+float AInvasionCharacter::GetManaNormalized() const
+{
+	return Mana / MaxMana;
 }
