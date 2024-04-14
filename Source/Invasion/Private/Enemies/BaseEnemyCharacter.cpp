@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Widgets/HealthBar.h"
 
 // Sets default values
 ABaseEnemyCharacter::ABaseEnemyCharacter()
@@ -22,6 +23,9 @@ ABaseEnemyCharacter::ABaseEnemyCharacter()
 	WeaponOverlapSphereComponent->SetupAttachment(RootComponent);
 
 	PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));
+
+	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
+	HealthBar->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +42,18 @@ void ABaseEnemyCharacter::BeginPlay()
 	EnemyAIController = Cast<ABaseEnemyAIController>(GetController());
 
 	AnimInstance = CastChecked<UEnemyAnimInstance>( GetMesh() ? GetMesh()->GetAnimInstance() : nullptr );
+
+	OnTakeAnyDamage.AddUniqueDynamic(this, &ThisClass::OnTakeDamage);
+
+	if (HealthBar && HealthBar->GetWidget())
+	{
+		HealthBarWidget = Cast<UHealthBar>(HealthBar->GetWidget());
+
+		if (HealthBarWidget)
+		{
+			HealthBarWidget->GetHealthBar()->SetFillColorAndOpacity(HealthBarWidgetColor);
+		}
+	}
 }
 
 void ABaseEnemyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -49,6 +65,8 @@ void ABaseEnemyCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	WeaponStaticMeshComponent->OnComponentBeginOverlap.RemoveAll(this);
 	WeaponOverlapSphereComponent->OnComponentBeginOverlap.RemoveAll(this);
 	WeaponOverlapSphereComponent->OnComponentEndOverlap.RemoveAll(this);
+
+	OnTakeAnyDamage.RemoveAll(this);
 }
 
 void ABaseEnemyCharacter::OnActorPerceived(const FActorPerceptionUpdateInfo& ActorPerceptionInfo)
@@ -98,7 +116,19 @@ void ABaseEnemyCharacter::OnWeaponOverlap(UPrimitiveComponent* OverlappedCompone
 	}
 }
 
-// Called every frame
+void ABaseEnemyCharacter::OnTakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatedBy, AActor* DamageCauser)
+{
+	CurrentHealth -= Damage;
+
+	if (HealthBarWidget)
+	{
+		const float HealthPercent = MaxHealth / CurrentHealth;
+		HealthBarWidget->GetHealthBar()->SetPercent(HealthPercent);
+		HealthBarWidget->SetText(FText::AsNumber(CurrentHealth));
+	}
+}
+
 void ABaseEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
