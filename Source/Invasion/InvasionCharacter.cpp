@@ -85,6 +85,7 @@ void AInvasionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		
 		EnhancedInputComponent->BindAction(SpellScrollAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::ScrollSpell);
 
+		EnhancedInputComponent->BindAction(SummonSpiritAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::SummonSpirit);
 	}
 	else
 	{
@@ -181,4 +182,14 @@ float AInvasionCharacter::GetManaNormalized() const
 void AInvasionCharacter::ScrollSpell(const FInputActionValue& Value)
 {
 	SpellComponent->MoveActiveSpellIndex(Value.Get<float>() > 0 ? 1 : -1);
+}
+
+void AInvasionCharacter::SummonSpirit()
+{
+	if (!SpiritCharacter || !SpiritCharacter->IsAlive())
+	{
+		FActorSpawnParameters parameters = FActorSpawnParameters();
+		parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpiritCharacter = GetWorld()->SpawnActor<ABaseSpiritCharacter>(SpiritCharacterClass, GetActorLocation() + GetActorForwardVector() * SpiritSpawnOffset, (-GetActorForwardVector()).ToOrientationRotator(), parameters);
+	}
 }

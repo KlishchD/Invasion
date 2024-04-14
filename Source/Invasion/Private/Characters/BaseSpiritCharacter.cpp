@@ -1,11 +1,9 @@
 #include "Characters/BaseSpiritCharacter.h"
-
 #include "AIController.h"
 #include "AI/BaseSpiritAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tasks/AITask_MoveTo.h"
-
 
 ABaseSpiritCharacter::ABaseSpiritCharacter()
 {
@@ -13,40 +11,53 @@ ABaseSpiritCharacter::ABaseSpiritCharacter()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-
 void ABaseSpiritCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	BaseSpiritAIController = Cast<ABaseSpiritAIController>(GetController());
 	CurrentHealth = MaxHealth;
-}
 
-void ABaseSpiritCharacter::FollowOwner()
-{
-	BaseSpiritAIController->MoveToActor(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	USkeletalMeshComponent* MeshComponent = GetMesh();
+	for (int32 i = 0; i < MeshComponent->GetNumMaterials(); ++i)
+	{
+		UMaterialInstanceDynamic* Material = MeshComponent->CreateAndSetMaterialInstanceDynamic(i);
+		Material->SetScalarParameterValue(TEXT("Opacity"), 0.0f);
+		Materials.Add(Material);
+	}
+
+	FadeInTimer = FadeInTime;
 }
 
 void ABaseSpiritCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	if(FVector::Distance(BaseSpiritAIController->GetPawn()->GetActorLocation(), UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetActorLocation()) > DistanceToFollow)
-	{
-		//FollowOwner();
-	}
 
-	if(bIsAlive == true)
+	if (bIsAlive)
 	{
+		if (FadeInTimer >= 0)
+		{
+			float Opacity = (FadeInTime - FadeInTimer) / FadeInTime;
+			for (UMaterialInstanceDynamic* Material : Materials)
+			{
+				Material->SetScalarParameterValue(TEXT("Opacity"), Opacity);
+			}
+
+			FadeInTimer -= DeltaTime;
+		}
+
 		if(CurrentHealth <= 0.0f)
 		{
+			FadeOutTimer = FadeOutTime;
+
 			bIsAlive = false;
 			GetCharacterMovement()->DisableMovement();
 			PlayAnimMontage(DeathAnimMontage);
-			SetLifeSpan(5.0f);
 		}
 		else
 		{
-			Timer+=DeltaTime;
-			if(Timer >= 1.0f)
+			Timer += DeltaTime;
+			
+			if (Timer >= 1.0f)
 			{
 				CurrentHealth--;
 				Timer = 0.0f;
@@ -54,4 +65,34 @@ void ABaseSpiritCharacter::Tick(float DeltaTime)
 			}
 		}
 	}
+	else
+	{
+		if (FadeOutTimer >= 0)
+		{
+			float Opacity = FadeOutTimer / FadeOutTime;
+			for (UMaterialInstanceDynamic* Material : Materials)
+			{
+				Material->SetScalarParameterValue(TEXT("Opacity"), Opacity);
+			}
+
+			FadeOutTimer -= DeltaTime;
+
+			if (FadeOutTimer <= 0)
+			{
+				for (UMaterialInstanceDynamic* Material : Materials)
+				{
+					Material->SetScalarParameterValue(TEXT("Opacity"), 0.0f);
+				}
+			}
+		}
+		else
+		{
+			SetLifeSpan(5.0f);
+		}
+	}
+}
+
+bool ABaseSpiritCharacter::IsAlive() const
+{
+	return bIsAlive;
 }

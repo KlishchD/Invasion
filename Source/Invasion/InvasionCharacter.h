@@ -9,6 +9,7 @@
 #include "Components/SpellComponent.h"
 #include "Widgets/SpellRuneDisplayWidget.h"
 #include "Widgets/StatusWidget.h"
+#include "Characters/BaseSpiritCharacter.h"
 #include "InvasionCharacter.generated.h"
 
 class UInputComponent;
@@ -57,6 +58,9 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SpellScrollAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* SummonSpiritAction;
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USpellRuneDisplayWidget> SpellRuneDisplayWidgetClass;
 
@@ -69,11 +73,20 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere)
 	float MaxMana = 100.0f;
 
+	UPROPERTY(EditAnywhere)
+	float SpiritSpawnOffset = 500.0f;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ABaseSpiritCharacter> SpiritCharacterClass;
+
 	UPROPERTY()
 	TObjectPtr<USpellRuneDisplayWidget> SpellRuneDisplayWidget;
 	
 	UPROPERTY()
 	TObjectPtr<UStatusWidget> StatusWidget;
+
+	UPROPERTY()
+	TObjectPtr<ABaseSpiritCharacter> SpiritCharacter;
 
 	FOnHealthChnaged OnHealthChnaged;
 	FOnManaChanged OnManaChanged;
@@ -140,5 +153,7 @@ public:
 
 	float GetHealthNormalized() const;
 	float GetManaNormalized() const;
+
+	void SummonSpirit();
 };
 

@@ -11,36 +11,43 @@ class INVASION_API ABaseSpiritCharacter : public ACharacter
 	GENERATED_BODY()
 
 public:
-
 	ABaseSpiritCharacter();
+
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 	UBehaviorTree* GetMainBehaviorTree() const { return MainBehaviorTree; };
 
-protected:
-	virtual void BeginPlay() override;
-
-	void FollowOwner();
+	bool IsAlive() const;
 
 protected:
-
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UBehaviorTree> MainBehaviorTree;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UAnimMontage> DeathAnimMontage;
 
-	UPROPERTY()
-	TObjectPtr<class ABaseSpiritAIController> BaseSpiritAIController;
-
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHealth = 100.0f;
 
+	UPROPERTY(EditAnywhere)
+	float FadeInTime = 3.0f;
+
+	UPROPERTY(EditAnywhere)
+	float FadeOutTime = 3.0f;
+
+	UPROPERTY()
+	TObjectPtr<class ABaseSpiritAIController> BaseSpiritAIController;
+	
+	UPROPERTY()
+	TArray<TObjectPtr<UMaterialInstanceDynamic>> Materials; 
+
+	
+	float FadeInTimer = 0.0f;
+	float FadeOutTimer = 0.0f;
+
 	float CurrentHealth;
 	
-	UPROPERTY(EditDefaultsOnly)
-	float DistanceToFollow = 200.0f;
-
 	bool bIsAlive = true;
 	float Timer = 0.0f;
 
