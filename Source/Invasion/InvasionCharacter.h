@@ -73,11 +73,14 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere)
 	float MaxMana = 100.0f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Spirit")
 	float SpiritSpawnOffset = 500.0f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Spirit")
 	TSubclassOf<ABaseSpiritCharacter> SpiritCharacterClass;
+
+	UPROPERTY(EditAnywhere, Category = "Spirit")
+	float SpiritSpawnManaCost = 10.0f;
 
 	UPROPERTY()
 	TObjectPtr<USpellRuneDisplayWidget> SpellRuneDisplayWidget;
@@ -131,6 +134,8 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
 public:
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
@@ -155,5 +160,8 @@ public:
 	float GetManaNormalized() const;
 
 	void SummonSpirit();
+
+	void AddHealthOffset(float Offset);
+	void AddManaOffset(float Offset);
 };
 

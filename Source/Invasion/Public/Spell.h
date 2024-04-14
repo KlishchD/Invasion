@@ -41,4 +41,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float Damage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float ManaCost;
 };

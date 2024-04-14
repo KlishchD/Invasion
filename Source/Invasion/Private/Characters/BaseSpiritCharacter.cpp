@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Tasks/AITask_MoveTo.h"
+#include "Components/CapsuleComponent.h"
 
 ABaseSpiritCharacter::ABaseSpiritCharacter()
 {
@@ -88,6 +89,8 @@ void ABaseSpiritCharacter::Tick(float DeltaTime)
 		else
 		{
 			SetLifeSpan(5.0f);
+			GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
 	}
 }

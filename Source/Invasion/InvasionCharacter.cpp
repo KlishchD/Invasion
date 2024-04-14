@@ -144,6 +144,8 @@ void AInvasionCharacter::StartSpellCasting(const FInputActionValue& Value)
 
 void AInvasionCharacter::CastSpell(float Strenght)
 {
+	AddManaOffset(-SpellComponent->GetActiveSpell()->ManaCost * Strenght);
+
 	SpellComponent->CastSpell(Strenght);
 
 	SwitchToGameMode();
@@ -188,8 +190,29 @@ void AInvasionCharacter::SummonSpirit()
 {
 	if (!SpiritCharacter || !SpiritCharacter->IsAlive())
 	{
+		AddManaOffset(-SpiritSpawnManaCost);
+
 		FActorSpawnParameters parameters = FActorSpawnParameters();
 		parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		SpiritCharacter = GetWorld()->SpawnActor<ABaseSpiritCharacter>(SpiritCharacterClass, GetActorLocation() + GetActorForwardVector() * SpiritSpawnOffset, (-GetActorForwardVector()).ToOrientationRotator(), parameters);
 	}
+}
+
+float AInvasionCharacter::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	AddHealthOffset(-DamageAmount);
+
+	return DamageAmount;
+}
+
+void AInvasionCharacter::AddHealthOffset(float Offset)
+{
+	Health += Offset;
+	OnHealthChnaged.Broadcast(Health);
+}
+
+void AInvasionCharacter::AddManaOffset(float Offset)
+{
+	Mana += Offset;
+	OnManaChanged.Broadcast(Mana);
 }
