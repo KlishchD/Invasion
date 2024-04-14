@@ -35,4 +35,10 @@ public:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Runes")
 	TObjectPtr<UMaterialInterface> RuneMaterial;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float ActiveRadius;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
+	float Damage;
 };

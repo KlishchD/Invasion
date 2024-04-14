@@ -21,13 +21,16 @@ void USpellComponent::CastSpell(float Strength)
 {
 	if (!FMath::IsNearlyZero(Strength))
 	{
-		if (AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass))
-		{
-			USpell* Spell = GetActiveSpell();
+		FActorSpawnParameters Parameters;
+		Parameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		Parameters.Owner = GetOwner<APawn>()->GetController();
 
-			Projectile->SetActorLocation(GetComponentLocation() + GetForwardVector() * Spell->Offset);
-			Projectile->SetActorRotation(GetComponentRotation());
-			Projectile->Initialize(Spell);
+		USpell* Spell = GetActiveSpell();
+
+		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, GetComponentLocation() + GetForwardVector() * Spell->Offset, GetComponentRotation(), Parameters);
+		if (Projectile)
+		{
+			Projectile->Initialize(Spell, Strength);
 		}
 	}
 }

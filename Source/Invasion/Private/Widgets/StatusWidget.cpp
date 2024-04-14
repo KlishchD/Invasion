@@ -10,7 +10,7 @@ void UStatusWidget::NativeConstruct()
 	Character->GetOnManaChanged().AddUObject(this, &ThisClass::OnManaChanged);
 	Character->GetSpellComponent()->GetOnActiveSpellChanged().AddUObject(this, &ThisClass::OnActiveSpellChanged);
 
-	SpellIcon->SetBrushFromTexture(Character->GetSpellComponent()->GetActiveSpell()->Icon);
+	SpellIcon->GetDynamicMaterial()->SetTextureParameterValue(TEXT("Icon"), Character->GetSpellComponent()->GetActiveSpell()->Icon);
 	HealthBar->SetPercent(Character->GetHealthNormalized());
 	ManaBar->SetPercent(Character->GetManaNormalized());
 }
@@ -40,5 +40,5 @@ void UStatusWidget::OnManaChanged(float Mana)
 
 void UStatusWidget::OnActiveSpellChanged(USpell* NewAciveSpell)
 {
-	SpellIcon->SetBrushFromTexture(NewAciveSpell->Icon);
+	SpellIcon->GetDynamicMaterial()->SetTextureParameterValue(TEXT("Icon"), NewAciveSpell->Icon);
 }

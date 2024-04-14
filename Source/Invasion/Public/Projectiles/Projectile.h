@@ -15,22 +15,12 @@ class INVASION_API AProjectile : public AActor
 public:	
 	AProjectile();
 
-	void Initialize(USpell* InSpell);
-
-	virtual void BeginPlay() override;
+	void Initialize(USpell* InSpell, float InStrength);
 	virtual void Tick(float DeltaTime) override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-protected:
-	UFUNCTION()
-	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraComponent> EffectNiagaraComponent;
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UBoxComponent> ColliderComponent;
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UAudioComponent> AudioComponent;
@@ -40,4 +30,7 @@ protected:
 
 	UPROPERTY()
 	float Speed = 0.0f;
+
+	UPROPERTY()
+	float Strength = 1.0f;
 };

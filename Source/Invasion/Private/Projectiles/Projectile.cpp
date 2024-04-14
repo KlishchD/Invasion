@@ -1,4 +1,6 @@
 #include "Projectiles/Projectile.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AProjectile::AProjectile()
 {
@@ -11,15 +13,9 @@ AProjectile::AProjectile()
 
 	AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AudioComponent"));
 	AudioComponent->SetupAttachment(RootComponent);
-
-	ColliderComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("ColliderComponent"));
-	ColliderComponent->SetupAttachment(RootComponent);
-
-	ColliderComponent->SetCollisionResponseToAllChannels(ECR_Overlap);
-	ColliderComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
-void AProjectile::Initialize(USpell* InSpell)
+void AProjectile::Initialize(USpell* InSpell, float InStrength)
 {
 	Spell = InSpell;
 
@@ -30,13 +26,10 @@ void AProjectile::Initialize(USpell* InSpell)
 	AudioComponent->Play();
 
 	Speed = Spell->Speed;
-}
 
-void AProjectile::BeginPlay()
-{
-	Super::BeginPlay();
+	Strength = InStrength;
 
-	ColliderComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnOverlapBegin);
+	SetActorTickEnabled(true);
 }
 
 void AProjectile::Tick(float DeltaTime)
@@ -46,22 +39,24 @@ void AProjectile::Tick(float DeltaTime)
 	FVector Location = GetActorLocation();
 	FVector Offset = Speed * GetActorForwardVector();
 	SetActorLocation(Location + Offset);
+
+	TArray<FHitResult> HitResults;
+	UKismetSystemLibrary::SphereTraceMulti(this, Location, Location + Offset, Spell->ActiveRadius, UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility), false, { GetOwner<APlayerController>()->GetPawn() }, EDrawDebugTrace::None, HitResults, true);
+
+	for (FHitResult& HitResult : HitResults)
+	{
+		if (AActor* Actor = HitResult.GetActor())
+		{
+			UGameplayStatics::ApplyDamage(Actor, Spell->Damage * Strength, GetOwner<AController>(), this, UDamageType::StaticClass());
+		}
+	}
+
+	if (HitResults.Num())
+	{
+		EffectNiagaraComponent->SetHiddenInGame(true);
+
+		AudioComponent->Stop();
+
+		SetActorTickEnabled(false);
+	}
 }
-
-void AProjectile::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	ColliderComponent->OnComponentBeginOverlap.RemoveAll(this);
-}
-
-void AProjectile::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* Other, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	EffectNiagaraComponent->DeactivateImmediate();
-	EffectNiagaraComponent->SetHiddenInGame(true);
-
-	AudioComponent->Stop();
-
-	ColliderComponent->OnComponentBeginOverlap.RemoveAll(this);
-}
-
