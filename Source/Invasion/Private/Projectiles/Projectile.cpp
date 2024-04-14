@@ -60,3 +60,8 @@ void AProjectile::Tick(float DeltaTime)
 		SetActorTickEnabled(false);
 	}
 }
+
+USpell* AProjectile::GetSpell() const
+{
+	return Spell;
+}

@@ -44,4 +44,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Interaction")
 	float ManaCost;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Element")
+	FLinearColor ElementColor;
 };

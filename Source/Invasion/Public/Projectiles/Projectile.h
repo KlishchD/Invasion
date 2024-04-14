@@ -18,6 +18,8 @@ public:
 	void Initialize(USpell* InSpell, float InStrength);
 	virtual void Tick(float DeltaTime) override;
 
+	USpell* GetSpell() const;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UNiagaraComponent> EffectNiagaraComponent;
