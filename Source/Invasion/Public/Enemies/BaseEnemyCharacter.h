@@ -87,7 +87,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UHealthBar> HealthBarWidget;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CurrentHealth = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
