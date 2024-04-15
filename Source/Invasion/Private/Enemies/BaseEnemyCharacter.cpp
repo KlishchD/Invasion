@@ -49,6 +49,7 @@ void ABaseEnemyCharacter::BeginPlay()
 
 		if (HealthBarWidget)
 		{
+			HealthBarWidget->SetText(FText::AsNumber(CurrentHealth));
 			HealthBarWidget->GetHealthBar()->SetFillColorAndOpacity(HealthBarWidgetColor);
 		}
 	}
