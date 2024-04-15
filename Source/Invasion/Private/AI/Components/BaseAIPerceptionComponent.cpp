@@ -2,6 +2,7 @@
 
 #include "AI/BaseSpiritAIController.h"
 #include "Characters/BaseSpiritCharacter.h"
+#include "Enemies/BaseEnemyCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Sight.h"
 
@@ -22,7 +23,7 @@ AActor* UBaseAIPerceptionComponent::GetClosestEnemy()
 
 	for(AActor* PerceiveActor : PerceiveActors)
 	{
-		if(PerceiveActor != UGameplayStatics::GetPlayerCharacter(GetWorld(), 0))
+		if(PerceiveActor != UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) && !Cast<ABaseEnemyCharacter>(PerceiveActor)->GetIsDead())
 		{
 			float CurrentDistance = (PerceiveActor->GetActorLocation() - Character->GetActorLocation()).Size();
 			if(CurrentDistance < BestDistance)
@@ -31,6 +32,10 @@ AActor* UBaseAIPerceptionComponent::GetClosestEnemy()
 				BestCharacter = PerceiveActor;
 			}
 		}
+	}
+	if(!IsValid(BestCharacter))
+	{
+		Character->SetIsAttacking(false);
 	}
 	return BestCharacter;
 	
