@@ -61,6 +61,9 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* SummonSpiritAction;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UInputAction* MenuAction;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<USpellRuneDisplayWidget> SpellRuneDisplayWidgetClass;
 
@@ -82,9 +85,15 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere, Category = "Spirit")
 	float SpiritSpawnManaCost = 10.0f;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> MenuWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<USpellRuneDisplayWidget> SpellRuneDisplayWidget;
 	
+	UPROPERTY()
+	TObjectPtr<UUserWidget> MenuWidget;
+
 	UPROPERTY()
 	TObjectPtr<UStatusWidget> StatusWidget;
 
@@ -163,5 +172,7 @@ public:
 
 	void AddHealthOffset(float Offset);
 	void AddManaOffset(float Offset);
+
+	void OpenMenu(const FInputActionValue& Value);
 };
 

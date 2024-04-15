@@ -62,6 +62,8 @@ void AInvasionCharacter::BeginPlay()
 
 	StatusWidget = CreateWidget<UStatusWidget>(GetWorld(), StatusWidgetClass);
 	StatusWidget->AddToViewport();
+
+	SwitchToGameMode();
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -86,6 +88,8 @@ void AInvasionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(SpellScrollAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::ScrollSpell);
 
 		EnhancedInputComponent->BindAction(SummonSpiritAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::SummonSpirit);
+
+		EnhancedInputComponent->BindAction(MenuAction, ETriggerEvent::Triggered, this, &AInvasionCharacter::OpenMenu);
 	}
 	else
 	{
@@ -144,9 +148,14 @@ void AInvasionCharacter::StartSpellCasting(const FInputActionValue& Value)
 
 void AInvasionCharacter::CastSpell(float Strenght)
 {
-	AddManaOffset(-SpellComponent->GetActiveSpell()->ManaCost * Strenght);
+	USpell* Spell = SpellComponent->GetActiveSpell();
 
-	SpellComponent->CastSpell(Strenght);
+	if (Spell->ManaCost * Strenght >= Mana)
+	{
+		AddManaOffset(-Spell->ManaCost * Strenght);
+
+		SpellComponent->CastSpell(Strenght);
+	}
 
 	SwitchToGameMode();
 }
@@ -215,4 +224,19 @@ void AInvasionCharacter::AddManaOffset(float Offset)
 {
 	Mana += Offset;
 	OnManaChanged.Broadcast(Mana);
+}
+
+void AInvasionCharacter::OpenMenu(const FInputActionValue& Value)
+{
+	if (MenuWidget && MenuWidget->IsInViewport())
+	{
+		MenuWidget->RemoveFromParent();
+		SwitchToGameMode();
+	}
+	else
+	{
+		MenuWidget = CreateWidget(GetWorld(), MenuWidgetClass);
+		MenuWidget->AddToViewport();
+		SwitchToUIMode();
+	}
 }
