@@ -98,11 +98,11 @@ void AInvasionCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 }
 
 
-void AInvasionCharacter::SwitchToUIMode()
+void AInvasionCharacter::SwitchToUIMode(bool bShowMouse)
 {
 	APlayerController* PC = GetController<APlayerController>();
-	PC->SetShowMouseCursor(true);
 	PC->SetInputMode(FInputModeUIOnly());
+	PC->SetShowMouseCursor(bShowMouse);
 }
 
 void AInvasionCharacter::SwitchToGameMode()
@@ -143,14 +143,14 @@ void AInvasionCharacter::StartSpellCasting(const FInputActionValue& Value)
 	SpellRuneDisplayWidget = CreateWidget<USpellRuneDisplayWidget>(GetWorld(), SpellRuneDisplayWidgetClass);
 	SpellRuneDisplayWidget->AddToViewport();
 
-	SwitchToUIMode();
+	SwitchToUIMode(false);
 }
 
 void AInvasionCharacter::CastSpell(float Strenght)
 {
 	USpell* Spell = SpellComponent->GetActiveSpell();
 
-	if (Spell->ManaCost * Strenght >= Mana)
+	if (Spell->ManaCost * Strenght <= Mana)
 	{
 		AddManaOffset(-Spell->ManaCost * Strenght);
 
@@ -218,6 +218,13 @@ void AInvasionCharacter::AddHealthOffset(float Offset)
 {
 	Health += Offset;
 	OnHealthChnaged.Broadcast(Health);
+
+	if (Health <= 0)
+	{
+		UUserWidget* DeathWidget = CreateWidget(GetWorld(), DeathWidgetClass);
+		DeathWidget->AddToViewport();
+		SwitchToUIMode();
+	}
 }
 
 void AInvasionCharacter::AddManaOffset(float Offset)

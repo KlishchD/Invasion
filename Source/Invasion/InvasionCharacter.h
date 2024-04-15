@@ -88,6 +88,9 @@ class AInvasionCharacter : public ACharacter, public IGenericTeamAgentInterface
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> MenuWidgetClass;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> DeathWidgetClass;
+
 	UPROPERTY()
 	TObjectPtr<USpellRuneDisplayWidget> SpellRuneDisplayWidget;
 	
@@ -156,7 +159,7 @@ public:
 	void StartSpellCasting(const FInputActionValue& Value);
 	void CastSpell(float Strength);
 
-	void SwitchToUIMode();
+	void SwitchToUIMode(bool bShowMouse = true);
 	void SwitchToGameMode();
 
 	FOnHealthChnaged& GetOnHealthChnaged() { return OnHealthChnaged; }

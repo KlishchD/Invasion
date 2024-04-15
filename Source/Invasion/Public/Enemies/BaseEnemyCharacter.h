@@ -63,6 +63,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopMovement();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnDead();
+
 	bool GetIsDead() const { return bIsDead; }
 
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;

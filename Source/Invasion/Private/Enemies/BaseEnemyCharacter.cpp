@@ -131,6 +131,8 @@ float ABaseEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 		SetActorEnableCollision(false);
 		bIsDead = true;
 
+		OnDead();
+
 		if (Cast<AInvasionCharacter>(DamageCauser))
 		{
 			MainCharacter->AddManaOffset(ManaReward);
@@ -181,6 +183,11 @@ void ABaseEnemyCharacter::Run()
 void ABaseEnemyCharacter::StopMovement()
 {
 	GetCharacterMovement()->MaxWalkSpeed = 0.f;
+}
+
+void ABaseEnemyCharacter::OnDead_Implementation()
+{
+
 }
 
 ETeamAttitude::Type ABaseEnemyCharacter::GetTeamAttitudeTowards(const AActor& Other) const

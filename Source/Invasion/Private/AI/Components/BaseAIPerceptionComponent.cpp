@@ -21,19 +21,23 @@ AActor* UBaseAIPerceptionComponent::GetClosestEnemy()
 	float BestDistance = MAX_FLT;
 	AActor* BestCharacter = nullptr;
 
-	for(AActor* PerceiveActor : PerceiveActors)
+	for (AActor* PerceiveActor : PerceiveActors)
 	{
-		if(PerceiveActor != UGameplayStatics::GetPlayerCharacter(GetWorld(), 0) && !Cast<ABaseEnemyCharacter>(PerceiveActor)->GetIsDead())
+		if (ABaseEnemyCharacter* Enemy = Cast<ABaseEnemyCharacter>(PerceiveActor))
 		{
-			float CurrentDistance = (PerceiveActor->GetActorLocation() - Character->GetActorLocation()).Size();
-			if(CurrentDistance < BestDistance)
+			if (!Enemy->GetIsDead())
 			{
-				BestDistance = CurrentDistance;
-				BestCharacter = PerceiveActor;
+				float CurrentDistance = (PerceiveActor->GetActorLocation() - Character->GetActorLocation()).Size();
+				if (CurrentDistance < BestDistance)
+				{
+					BestDistance = CurrentDistance;
+					BestCharacter = PerceiveActor;
+				}
 			}
 		}
 	}
-	if(!IsValid(BestCharacter))
+
+	if (!IsValid(BestCharacter))
 	{
 		Character->SetIsAttacking(false);
 	}
