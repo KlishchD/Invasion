@@ -63,6 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopMovement();
 
+	bool GetIsDead() const { return bIsDead; }
+
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	
 protected:
@@ -120,6 +122,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsInLineOfSight = false;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bIsDead = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float TargetLostTime;

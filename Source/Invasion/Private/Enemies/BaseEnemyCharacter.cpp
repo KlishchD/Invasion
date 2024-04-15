@@ -128,6 +128,8 @@ float ABaseEnemyCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Da
 	{
 		EnemyAIController->UnPossess();
 		HealthBar->SetHiddenInGame(true);
+		SetActorEnableCollision(false);
+		bIsDead = true;
 
 		if (Cast<AInvasionCharacter>(DamageCauser))
 		{
